@@ -1,0 +1,182 @@
+/* 1. Strict 100vh Shell - Prevents any window scrollbars */
+.auth-viewport {
+  height: 100vh;
+  height: 100dvh;
+  width: 100vw;
+  background-color: #0f172a; /* Deep modern navy slate */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* Hard lock */
+  position: relative;
+}
+
+/* 2. Visual Ambient Glowing Orbs */
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+.orb-primary {
+  width: 380px;
+  height: 380px;
+  background: #3b82f6;
+  top: -100px;
+  left: -80px;
+}
+
+.orb-secondary {
+  width: 420px;
+  height: 420px;
+  background: #6366f1;
+  bottom: -120px;
+  right: -90px;
+}
+
+.orb-accent {
+  width: 250px;
+  height: 250px;
+  background: #06b6d4;
+  top: 45%;
+  left: 45%;
+  transform: translate(-50%, -50%);
+  opacity: 0.15;
+}
+
+/* 3. The Main Card Container: Fixed Max Bounds */
+.auth-card {
+  max-width: 960px;
+  max-height: 580px; /* Fits comfortably within 768px laptop height */
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+  display: flex;
+}
+
+/* Left Visual Pane */
+.visual-pane {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+
+  .pane-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.25), transparent 70%);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #60a5fa, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.feature-glass-box {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.feature-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Right Form Pane Sizing */
+.form-pane {
+  background: #ffffff;
+}
+
+/* Micro-Typography & Tight Inputs to eliminate height bloat */
+.compact-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.2rem;
+}
+
+.extra-small {
+  font-size: 0.75rem;
+}
+
+.compact-err {
+  font-size: 0.72rem;
+  margin-top: 0.15rem;
+}
+
+.form-control-compact {
+  height: 36px;
+  padding: 0.38rem 0.75rem;
+  font-size: 0.85rem;
+  border-radius: 0.45rem;
+  border: 1px solid #cbd5e1;
+  background-color: #f8fafc;
+  transition: all 0.2s ease;
+
+  &::placeholder {
+    color: #94a3b8;
+    font-size: 0.8rem;
+  }
+
+  &:focus {
+    background-color: #ffffff;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+  }
+}
+
+/* Gender Segmented Pills */
+.btn-pill-compact {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #475569;
+  border-radius: 0.45rem;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: #f1f5f9;
+  }
+}
+
+.btn-check:checked + .btn-pill-compact {
+  background-color: #e0e7ff;
+  border-color: #6366f1;
+  color: #4338ca;
+  font-weight: 600;
+}
+
+/* Action Button */
+.btn-gradient-action {
+  height: 38px;
+  font-size: 0.88rem;
+  border-radius: 0.45rem;
+  border: none;
+  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, #4338ca 0%, #2563eb 100%);
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

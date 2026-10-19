@@ -1,0 +1,9 @@
+.tab-modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.table th {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}

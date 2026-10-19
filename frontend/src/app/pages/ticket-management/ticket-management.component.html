@@ -1,0 +1,155 @@
+<!-- Analytics Dynamic Cards Row -->
+<div class="row g-3 mb-4">
+  <!-- Card 1: Total -->
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm rounded-3 bg-primary bg-gradient text-white p-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <p class="mb-1 text-white-50 small fw-semibold text-uppercase">Total Tickets</p>
+          <h3 class="fw-bold m-0">{{ totalTickets }}</h3>
+        </div>
+        <i class="bi bi-ticket-detailed fs-1 text-white-50"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 2: Pending -->
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm rounded-3 bg-warning bg-gradient text-dark p-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <p class="mb-1 text-dark-50 small fw-semibold text-uppercase">Pending</p>
+          <h3 class="fw-bold m-0">{{ pendingTickets }}</h3>
+        </div>
+        <i class="bi bi-hourglass-split fs-1 text-dark-50"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 3: In Progress -->
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm rounded-3 bg-info bg-gradient text-white p-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <p class="mb-1 text-white-50 small fw-semibold text-uppercase">In Progress</p>
+          <h3 class="fw-bold m-0">{{ inProgressTickets }}</h3>
+        </div>
+        <i class="bi bi-arrow-repeat fs-1 text-white-50"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 4: Completed -->
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm rounded-3 bg-success bg-gradient text-white p-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <p class="mb-1 text-white-50 small fw-semibold text-uppercase">Completed</p>
+          <h3 class="fw-bold m-0">{{ completedTickets }}</h3>
+        </div>
+        <i class="bi bi-check-circle fs-1 text-white-50"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 p-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h5 class="fw-bold text-dark m-0"><i class="bi bi-ticket-perforated me-2 text-primary"></i> Support Tickets</h5>
+      <p class="text-muted small m-0">Track and manage portal system support issues.</p>
+    </div>
+    <button class="btn btn-primary btn-sm px-3" (click)="openCreateModal()">
+      <i class="bi bi-plus-lg me-1"></i> Create Ticket
+    </button>
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success py-2 small">{{ successMessage }}</div>
+
+  <!-- Data Table -->
+  <div class="table-responsive table-scroller">
+    <table class="table table-hover align-middle">
+      <thead class="table-light stickey-top">
+        <tr>
+          <th>#ID</th>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Priority</th>
+          <th>Status</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ticket of ticketsList">
+          <td class="fw-bold">#{{ ticket.id }}</td>
+          <td class="fw-semibold">{{ ticket.title }}</td>
+          <td class="text-muted small">{{ ticket.description }}</td>
+          <td>
+            <span class="badge" [ngClass]="{
+              'bg-danger-subtle text-danger': ticket.priority === 'High',
+              'bg-warning-subtle text-warning': ticket.priority === 'Medium',
+              'bg-secondary-subtle text-secondary': ticket.priority === 'Low'
+            }">{{ ticket.priority }}</span>
+          </td>
+          <td>
+            <span class="badge" [ngClass]="{
+              'bg-success-subtle text-success': ticket.status === 'Completed',
+              'bg-info-subtle text-info': ticket.status === 'InProgress',
+              'bg-light text-dark border': ticket.status === 'Pending'
+            }">{{ ticket.status }}</span>
+          </td>
+          <td class="text-end">
+            <button class="btn btn-light btn-sm me-1 text-primary" (click)="openEditModal(ticket)"><i class="bi bi-pencil-square"></i></button>
+            <button class="btn btn-light btn-sm text-danger" (click)="onDeleteTicket(ticket.id)"><i class="bi bi-trash"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Dialog -->
+<div *ngIf="isModalOpen" class="modal fade show d-block tab-modal-backdrop">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">{{ isEditMode ? 'Edit Ticket' : 'Create New Ticket' }}</h5>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+      <form [formGroup]="ticketForm" (ngSubmit)="onSaveTicket()">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Title</label>
+            <input type="text" formControlName="title" class="form-control form-control-sm" placeholder="Issue title">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Description</label>
+            <textarea formControlName="description" class="form-control form-control-sm" rows="3"></textarea>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label small fw-semibold">Priority</label>
+              <select formControlName="priority" class="form-select form-select-sm">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label small fw-semibold">Status</label>
+              <select formControlName="status" class="form-select form-select-sm">
+                <option value="Pending">Pending</option>
+                <option value="InProgress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light btn-sm" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm px-3">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

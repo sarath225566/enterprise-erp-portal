@@ -1,0 +1,12 @@
+## .NET Build Folders
+**/bin/
+**/obj/
+**/.vs/
+
+## Node / Angular
+**/node_modules/
+**/.angular/
+**/dist/
+
+## Local App Settings (Secret key ullathukondu)
+backend/**/appsettings.Development.json

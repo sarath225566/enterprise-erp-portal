@@ -1,0 +1,100 @@
+/* You can add global styles to this file, and also import other style files */
+/* =================================
+   GLOBAL APPLICATION FONT
+================================= */
+
+body {
+  font-size: 13px;
+}
+
+
+/* Headings */
+
+h1 {
+  font-size: 22px;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+h4 {
+  font-size: 16px;
+}
+
+h5 {
+  font-size: 14px;
+}
+
+h6 {
+  font-size: 13px;
+}
+
+
+/* Labels */
+
+label,
+.form-label {
+  font-size: 12px;
+}
+
+
+/* Form controls */
+
+.form-control,
+.form-select {
+  font-size: 12px;
+}
+
+
+/* Buttons */
+
+.btn {
+  font-size: 12px;
+}
+
+
+/* Tables */
+
+.table {
+  font-size: 12px;
+}
+
+.table th {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.table td {
+  font-size: 12px;
+}
+
+
+/* Cards */
+
+.card-header {
+  font-size: 13px;
+}
+
+.card-body {
+  font-size: 13px;
+}
+
+
+/* Badges */
+
+.badge {
+  font-size: 10px;
+}
+
+
+/* Dropdown */
+
+.dropdown-menu,
+.dropdown-item {
+  font-size: 12px;
+}

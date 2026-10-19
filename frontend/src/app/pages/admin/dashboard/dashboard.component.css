@@ -1,0 +1,182 @@
+/* Top Navbar */
+
+.navbar {
+  font-size: 13px;
+}
+
+.navbar .small {
+  font-size: 12px !important;
+}
+
+.navbar .extra-small {
+  font-size: 10px !important;
+}
+
+
+/* Search */
+
+.search-box input {
+  font-size: 12px;
+}
+
+
+/* Dropdown */
+
+.dropdown-menu .dropdown-item {
+  font-size: 12px !important;
+}
+/* =========================
+   Sidebar Main Menu
+========================= */
+
+.sidebar-container .nav-link {
+  font-size: 13px !important;
+  padding: 8px 10px !important;
+}
+
+.sidebar-container .nav-link i {
+  font-size: 14px;
+}
+
+
+/* =========================
+   Sidebar Sub Menu
+========================= */
+
+.sidebar-container .submenu-item {
+  font-size: 12px !important;
+  padding: 7px 10px !important;
+}
+
+.sidebar-container .submenu-item i {
+  font-size: 12px !important;
+}
+
+
+/* =========================
+   Sidebar Logo
+========================= */
+
+.sidebar-container .fs-4 {
+  font-size: 18px !important;
+}
+
+.sidebar-container .fs-3 {
+  font-size: 20px !important;
+}
+.sidebar-container {
+  width: 260px;
+  height: 100vh;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.nav-link.active {
+  background-color: #0d6efd !important;
+}
+
+.notification-box {
+  width: 280px;
+}
+
+.chatbot-widget {
+  width: 320px;
+  z-index: 1050;
+}
+.search-box {
+  width: 280px;
+}
+
+.search-box .input-group-text,
+.search-box input {
+  border-radius: 20px;
+}
+
+/* Icon Buttons (Chat & Notification) */
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.icon-btn:hover {
+  background-color: #e9ecef !important;
+  transform: translateY(-1px);
+}
+
+/* Avatar Circle */
+.avatar-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+/* Utilities */
+.extra-small {
+  font-size: 11px;
+}
+
+.leading-none {
+  line-height: 1.2;
+}
+
+.hide-caret::after {
+  display: none !important;
+}
+
+.notification-box {
+  width: 300px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+.chatbot-messages {
+  height: 220px;
+  overflow-y: auto;
+}
+
+.chatbot-widget {
+  width: 350px;
+  max-width: 90vw;
+  z-index: 1055;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.chatbot-messages {
+  height: 330px;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-bubble {
+  max-width: 82%;
+  word-break: break-word;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.chat-bubble-user {
+  border-bottom-right-radius: 2px !important;
+}
+
+.chat-bubble-ai {
+  border-bottom-left-radius: 2px !important;
+}
+
+.chat-time {
+  font-size: 0.65rem;
+  margin-top: 2px;
+}

@@ -1,0 +1,274 @@
+<div class="grn-container">
+
+  <!-- Top Action Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <h4 class="fw-bold text-dark mb-1">Goods Receipt Note (GRN) Operations</h4>
+      <p class="text-muted small mb-0">Record physical material deliveries, perform quality damage inspections, and assign bin locations.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1 shadow-sm" (click)="fetchGrnList()">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
+      <button class="btn btn-primary btn-sm d-flex align-items-center gap-1 shadow-sm px-3" (click)="openCreateModal()">
+        <i class="bi bi-box-arrow-in-down me-1"></i> New GRN Inward Entry
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter & Search Bar -->
+  <div class="card border-0 shadow-sm p-3 mb-4">
+    <div class="row g-2 align-items-center">
+      <div class="col-12 col-md-5">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
+          <input
+            type="text"
+            class="form-control bg-light border-0 shadow-none"
+            placeholder="Search by GRN Number, PO Number, or Vendor..."
+            [(ngModel)]="searchQuery"
+            (input)="applyFilter()"
+          />
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="d-flex align-items-center gap-2">
+          <span class="small text-muted text-nowrap">Warehouse:</span>
+          <select class="form-select form-select-sm shadow-none" [(ngModel)]="warehouseFilter" (change)="applyFilter()">
+            <option value="All">All Warehouses</option>
+            <option value="Main Central Depot">Main Central Depot</option>
+            <option value="Regional Warehouse A (Kollam)">Regional Warehouse A (Kollam)</option>
+            <option value="Buffer Storage Facility">Buffer Storage Facility</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-12 col-md-3 text-md-end text-muted small">
+        Showing {{ filteredList.length }} of {{ grnList.length }} Inward Notes
+      </div>
+    </div>
+  </div>
+
+  <!-- Records Table -->
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr class="extra-small text-uppercase text-secondary">
+            <th>GRN Number</th>
+            <th>PO Reference</th>
+            <th>Vendor Name</th>
+            <th>Challan / Inv No</th>
+            <th>Received Date</th>
+            <th>Warehouse</th>
+            <th class="text-center">Status</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoading">
+            <td colspan="8" class="text-center py-4 text-muted">
+              <div class="spinner-border spinner-border-sm text-primary me-2"></div> Loading Inward Notes...
+            </td>
+          </tr>
+          <tr *ngIf="!isLoading && filteredList.length === 0">
+            <td colspan="8" class="text-center py-5 text-muted">
+              <i class="bi bi-box-seam fs-2 d-block mb-2"></i>
+              No Goods Receipt Notes found. Click 'New GRN Inward Entry' to log one.
+            </td>
+          </tr>
+          <tr *ngFor="let grn of filteredList">
+            <td class="fw-bold text-primary cursor-pointer" (click)="viewDetails(grn)">{{ grn.grnNumber }}</td>
+            <td class="fw-semibold text-secondary">
+              <span *ngIf="grn.poNumber" class="badge bg-light text-dark border">{{ grn.poNumber }}</span>
+              <span *ngIf="!grn.poNumber" class="text-muted small">Direct Delivery</span>
+            </td>
+            <td class="text-dark">{{ grn.vendorName }}</td>
+            <td class="text-muted small">{{ grn.challanNumber || '-' }}</td>
+            <td class="text-muted small">{{ grn.receivedDate | date:'mediumDate' }}</td>
+            <td class="small"><i class="bi bi-geo-alt me-1 text-primary"></i>{{ grn.warehouseLocation }}</td>
+            <td class="text-center">
+              <span class="badge rounded-pill extra-small px-3 py-1 bg-success-subtle text-success border border-success-subtle">
+                {{ grn.status }}
+              </span>
+            </td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-light" (click)="viewDetails(grn)">
+                <i class="bi bi-eye"></i> Details
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Create Modal -->
+  <div *ngIf="isCreateModalOpen" class="modal-backdrop-custom d-flex align-items-center justify-content-center">
+    <div class="modal-card bg-white rounded-3 shadow-lg p-4 col-11 col-xl-10 overflow-auto" style="max-height: 92vh;">
+
+      <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mb-3">
+        <h5 class="fw-bold text-dark mb-0">
+          <i class="bi bi-box-arrow-in-down me-2 text-primary"></i>New Goods Receipt Note (Inward Inspection)
+        </h5>
+        <button class="btn-close" (click)="closeCreateModal()"></button>
+      </div>
+
+      <!-- Header Info -->
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-4">
+          <label class="form-label small fw-semibold">Link Active Purchase Order (Optional)</label>
+          <select class="form-select form-select-sm" (change)="onPoSelect($event)">
+            <option value="">-- Select Approved PO --</option>
+            <option *ngFor="let po of pendingPOs" [value]="po.id">
+              {{ po.poNumber }} - {{ po.vendorName }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label class="form-label small fw-semibold">Vendor / Supplier Name *</label>
+          <input type="text" class="form-control form-control-sm" [(ngModel)]="newGrn.vendorName" placeholder="Vendor entity" />
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label class="form-label small fw-semibold">Challan / Invoice Reference *</label>
+          <input type="text" class="form-control form-control-sm" [(ngModel)]="newGrn.challanNumber" placeholder="DC / Bill No" />
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label class="form-label small fw-semibold">Receiving Warehouse Location</label>
+          <select class="form-select form-select-sm" [(ngModel)]="newGrn.warehouseLocation">
+            <option value="Main Central Depot">Main Central Depot</option>
+            <option value="Regional Warehouse A (Kollam)">Regional Warehouse A (Kollam)</option>
+            <option value="Buffer Storage Facility">Buffer Storage Facility</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-md-8">
+          <label class="form-label small fw-semibold">Inspector Remarks / Vehicle Details</label>
+          <input type="text" class="form-control form-control-sm" [(ngModel)]="newGrn.remarks" placeholder="Delivery vehicle number, seal conditions, driver details" />
+        </div>
+      </div>
+
+      <!-- Material Quality Inspection Grid -->
+      <h6 class="fw-bold text-secondary mb-2 mt-4">Inward Material Inspection & Put-away Assignment</h6>
+      <div class="table-responsive mb-3 border rounded-3">
+        <table class="table table-sm align-middle mb-0">
+          <thead class="table-light extra-small text-uppercase">
+            <tr>
+              <th style="width: 22%;">Item Description</th>
+              <th style="width: 14%;">SKU</th>
+              <th style="width: 10%;">Ordered</th>
+              <th style="width: 10%;">Received</th>
+              <th style="width: 10%;" class="text-danger">Damaged</th>
+              <th style="width: 10%;" class="text-success">Accepted</th>
+              <th style="width: 12%;">Batch No</th>
+              <th style="width: 12%;">Target Bin</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of newGrn.items; let i = index">
+              <td>
+                <input type="text" class="form-control form-control-sm" placeholder="Item name" [(ngModel)]="item.itemName" />
+              </td>
+              <td>
+                <input type="text" class="form-control form-control-sm" placeholder="SKU" [(ngModel)]="item.itemSku" />
+              </td>
+              <td>
+                <input type="number" class="form-control form-control-sm text-center" [(ngModel)]="item.orderedQty" />
+              </td>
+              <td>
+                <input type="number" class="form-control form-control-sm text-center" [(ngModel)]="item.receivedQty" />
+              </td>
+              <td>
+                <input type="number" class="form-control form-control-sm text-center text-danger fw-bold" [(ngModel)]="item.damagedQty" />
+              </td>
+              <td class="text-center fw-bold text-success">
+                {{ getAcceptedQty(item) }}
+              </td>
+              <td>
+                <input type="text" class="form-control form-control-sm" placeholder="Batch ID" [(ngModel)]="item.batchNumber" />
+              </td>
+              <td>
+                <input type="text" class="form-control form-control-sm" placeholder="Bin-A-01" [(ngModel)]="item.storageBinLocation" />
+              </td>
+              <td class="text-center">
+                <button class="btn btn-sm text-danger p-0" (click)="removeItemRow(i)" [disabled]="newGrn.items.length === 1">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <button class="btn btn-outline-primary btn-sm" (click)="addItemRow()">
+          <i class="bi bi-plus-lg me-1"></i> Add Manual Item Row
+        </button>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+        <button class="btn btn-light btn-sm px-3" (click)="closeCreateModal()">Cancel</button>
+        <button class="btn btn-primary btn-sm px-4" (click)="submitGrn()">
+          <i class="bi bi-check2-circle me-1"></i> Verify & Update Stock
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Inspection Modal -->
+  <div *ngIf="selectedGrnForView" class="modal-backdrop-custom d-flex align-items-center justify-content-center">
+    <div class="modal-card bg-white rounded-3 shadow-lg p-4 col-11 col-lg-8">
+      <div class="d-flex justify-content-between align-items-start pb-3 border-bottom mb-3">
+        <div>
+          <h5 class="fw-bold text-dark mb-0">{{ selectedGrnForView.grnNumber }}</h5>
+          <span class="text-muted small">Vendor: <strong>{{ selectedGrnForView.vendorName }}</strong> | Challan: {{ selectedGrnForView.challanNumber || '-' }}</span>
+        </div>
+        <button class="btn-close" (click)="closeViewModal()"></button>
+      </div>
+
+      <div class="row g-2 small mb-3">
+        <div class="col-6"><strong>Receiving Date:</strong> {{ selectedGrnForView.receivedDate | date:'mediumDate' }}</div>
+        <div class="col-6"><strong>Warehouse:</strong> {{ selectedGrnForView.warehouseLocation }}</div>
+        <div class="col-6" *ngIf="selectedGrnForView.poNumber"><strong>Linked PO:</strong> {{ selectedGrnForView.poNumber }}</div>
+        <div class="col-12" *ngIf="selectedGrnForView.remarks"><strong>Inspection Notes:</strong> {{ selectedGrnForView.remarks }}</div>
+      </div>
+
+      <div class="table-responsive border rounded-3 mb-3">
+        <table class="table table-sm mb-0 align-middle">
+          <thead class="table-light extra-small text-uppercase">
+            <tr>
+              <th>SKU</th>
+              <th>Item Name</th>
+              <th class="text-center">Ordered</th>
+              <th class="text-center">Received</th>
+              <th class="text-center text-danger">Damaged</th>
+              <th class="text-center text-success">Accepted</th>
+              <th>Batch</th>
+              <th>Bin Location</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of selectedGrnForView.items">
+              <td class="text-muted small">{{ item.itemSku }}</td>
+              <td class="fw-semibold">{{ item.itemName }}</td>
+              <td class="text-center">{{ item.orderedQty }}</td>
+              <td class="text-center">{{ item.receivedQty }}</td>
+              <td class="text-center text-danger fw-bold">{{ item.damagedQty }}</td>
+              <td class="text-center text-success fw-bold">{{ item.acceptedQty }}</td>
+              <td class="small">{{ item.batchNumber || '-' }}</td>
+              <td class="small"><span class="badge bg-light text-dark border">{{ item.storageBinLocation }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2 pt-2 border-top">
+        <button class="btn btn-secondary btn-sm" (click)="closeViewModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+</div>

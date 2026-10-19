@@ -1,0 +1,756 @@
+<div class="container-fluid">
+
+  <!-- Page Header -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h4 class="mb-1">Purchase Requisition</h4>
+      <small class="text-muted">
+        Create and manage internal purchase requests
+      </small>
+    </div>
+
+    <button class="btn btn-primary btn-sm" (click)="newRequisition()">
+      <i class="bi bi-plus-lg me-1"></i>
+      New Requisition
+    </button>
+  </div>
+
+
+  <!-- Filters -->
+  <div class="card shadow-sm mb-3">
+    <div class="card-body py-3">
+
+      <div class="row g-2">
+
+        <div class="col-md-3">
+          <label class="form-label">Search</label>
+          <div class="input-group input-group-sm">
+            <span class="input-group-text">
+              <i class="bi bi-search"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="PR No / Requester"
+              [(ngModel)]="filter.search"
+            />
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Status</label>
+          <select class="form-select form-select-sm" [(ngModel)]="filter.status">
+            <option>All</option>
+            <option>Draft</option>
+            <option>Pending Approval</option>
+            <option>Approved</option>
+            <option>Rejected</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Department</label>
+          <select class="form-select form-select-sm" [(ngModel)]="filter.department">
+            <option>All</option>
+            <option>IT</option>
+            <option>HR</option>
+            <option>Finance</option>
+            <option>Operations</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">From Date</label>
+          <input type="date" class="form-control form-control-sm" [(ngModel)]="filter.fromDate">
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">To Date</label>
+          <input type="date" class="form-control form-control-sm" [(ngModel)]="filter.toDate">
+        </div>
+
+        <div class="col-md-1 d-flex align-items-end">
+          <button class="btn btn-outline-primary btn-sm w-100" (click)="applyFilter()">
+            <i class="bi bi-funnel"></i>
+          </button>
+        </div>
+
+      </div>
+       <!-- Clear Filter -->
+    <div class="mt-2" *ngIf="isFilterApplied">
+
+      <button
+        type="button"
+        class="btn btn-link btn-sm p-0"
+        (click)="clearFilter()">
+
+        <i class="bi bi-x-circle me-1"></i>
+        Clear Filters
+
+      </button>
+
+    </div>
+
+    </div>
+  </div>
+
+
+  <!-- PR List -->
+  <div class="card shadow-sm">
+
+    <div class="card-header bg-white d-flex justify-content-between">
+      <h6 class="mb-0">Purchase Requisitions</h6>
+
+      <span class="badge bg-secondary">
+        {{ filteredRequisitions.length }} Requests
+      </span>
+    </div>
+
+    <div class="card-body p-0">
+
+      <div class="table-responsive">
+
+        <table class="table table-hover table-sm align-middle mb-0">
+
+          <thead class="table-light">
+
+            <tr>
+              <th>PR No</th>
+              <th>Date</th>
+              <th>Requested By</th>
+              <th>Department</th>
+              <th>Required Date</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th class="text-center">Action</th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <tr *ngFor="let pr of filteredRequisitions">
+
+              <td>
+                <span class="fw-semibold text-primary">
+                  {{ pr.prNumber }}
+                </span>
+              </td>
+
+              <td>
+                {{ pr.requestDate }}
+              </td>
+
+              <td>
+                {{ pr.requestedBy }}
+              </td>
+
+              <td>
+                {{ pr.department }}
+              </td>
+
+              <td>
+                {{ pr.requiredDate }}
+              </td>
+
+              <td>
+                ₹{{ pr.amount | number:'1.2-2' }}
+              </td>
+
+              <td>
+
+                <span
+                  class="badge"
+                  [ngClass]="{
+                    'bg-secondary': pr.status === 'Draft',
+                    'bg-warning text-dark': pr.status === 'Pending Approval',
+                    'bg-success': pr.status === 'Approved',
+                    'bg-danger': pr.status === 'Rejected'
+                  }">
+
+                  {{ pr.status }}
+
+                </span>
+
+              </td>
+
+              <td class="text-center">
+
+                <button
+                  class="btn btn-sm btn-outline-primary me-1"
+                  title="View"
+                  (click)="viewRequisition(pr)">
+                  <i class="bi bi-eye"></i>
+                </button>
+
+                <button
+                  *ngIf="pr.status === 'Draft'"
+                  class="btn btn-sm btn-outline-secondary"
+                  title="Edit"
+                  (click)="editRequisition(pr)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+
+              </td>
+
+            </tr>
+
+            <tr *ngIf="filteredRequisitions.length === 0">
+
+              <td colspan="8" class="text-center py-4 text-muted">
+
+                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+
+                No purchase requisitions found.
+
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- CREATE / EDIT PR MODAL -->
+<!-- ===================================================== -->
+
+<div
+  class="modal fade"
+  [class.show]="showForm"
+  [style.display]="showForm ? 'block' : 'none'"
+  tabindex="-1">
+
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+
+      <div class="modal-header">
+
+        <div>
+          <h5 class="modal-title">
+            {{ isEditMode
+              ? 'Edit Purchase Requisition'
+              : 'Create Purchase Requisition'
+            }}
+          </h5>
+
+          <small class="text-muted">
+            Purchase request details
+          </small>
+        </div>
+
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeForm()">
+        </button>
+
+      </div>
+
+
+      <!-- Modal Body -->
+
+      <div class="modal-body">
+
+        <!-- ================= HEADER ================= -->
+
+        <div class="card border mb-3">
+
+          <div class="card-header bg-light">
+            <strong>Request Information</strong>
+          </div>
+
+          <div class="card-body">
+
+            <div class="row g-3">
+
+              <div class="col-md-3">
+
+                <label class="form-label">
+                  PR Number
+                </label>
+
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  [(ngModel)]="prForm.prNumber"
+                  readonly>
+
+              </div>
+
+
+              <div class="col-md-3">
+
+                <label class="form-label">
+                  Request Date <span class="text-danger">*</span>
+                </label>
+
+                <input
+                  type="date"
+                  class="form-control form-control-sm"
+                  [(ngModel)]="prForm.requestDate">
+
+              </div>
+
+
+              <div class="col-md-3">
+
+                <label class="form-label">
+                  Requested By <span class="text-danger">*</span>
+                </label>
+
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  [(ngModel)]="prForm.requestedBy">
+
+              </div>
+
+
+              <div class="col-md-3">
+
+                <label class="form-label">
+                  Department <span class="text-danger">*</span>
+                </label>
+
+                <select
+                  class="form-select form-select-sm"
+                  [class.is-invalid]="validationErrors.department"
+                  [(ngModel)]="prForm.department">
+
+                  <option value="">Select Department</option>
+                  <option>IT</option>
+                  <option>HR</option>
+                  <option>Finance</option>
+                  <option>Operations</option>
+
+                </select>
+                <div
+  *ngIf="validationErrors.department"
+  class="invalid-feedback d-block validation-error">
+
+  {{ validationErrors.department }}
+
+</div>
+              </div>
+
+
+              <div class="col-md-3">
+
+                <label class="form-label">
+                  Required Date <span class="text-danger">*</span>
+                </label>
+
+                <input
+                  type="date"
+                  class="form-control form-control-sm"
+                  [class.is-invalid]="validationErrors.requiredDate"
+                  [(ngModel)]="prForm.requiredDate">
+                <div
+  *ngIf="validationErrors.requiredDate"
+  class="invalid-feedback d-block validation-error">
+
+  {{ validationErrors.requiredDate }}
+
+</div>
+              </div>
+
+
+              <div class="col-md-3">
+
+                <label class="form-label">
+                  Priority
+                </label>
+
+                <select
+                  class="form-select form-select-sm"
+                  [class.is-invalid]="validationErrors.priority"
+                  [(ngModel)]="prForm.priority">
+
+                  <option>Low</option>
+                  <option>Medium</option>
+                  <option>High</option>
+                  <option>Urgent</option>
+
+                </select>
+                <div
+  *ngIf="validationErrors.priority"
+  class="invalid-feedback d-block validation-error">
+
+  {{ validationErrors.priority }}
+
+</div>
+              </div>
+
+
+              <div class="col-md-3">
+
+                <label class="form-label">
+                  Cost Center
+                </label>
+
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="e.g. IT-001"
+                  [(ngModel)]="prForm.costCenter">
+
+              </div>
+
+
+              <div class="col-md-3">
+
+                <label class="form-label">
+                  Project
+                </label>
+
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="Project name"
+                  [(ngModel)]="prForm.project">
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- ================= ITEMS ================= -->
+
+        <div class="card border mb-3">
+
+          <div class="card-header bg-light d-flex justify-content-between">
+
+            <strong>Requisition Items</strong>
+
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              (click)="addItem()">
+
+              <i class="bi bi-plus-lg me-1"></i>
+              Add Item
+
+            </button>
+
+          </div>
+
+
+          <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+              <table class="table table-bordered table-sm mb-0 align-middle">
+
+                <thead class="table-light">
+
+                  <tr>
+
+                    <th style="width: 20%">Product</th>
+
+                    <th style="width: 22%">Description</th>
+
+                    <th style="width: 9%">Qty</th>
+
+                    <th style="width: 9%">UOM</th>
+
+                    <th style="width: 14%">Estimated Price</th>
+
+                    <th style="width: 14%">Amount</th>
+
+                    <th style="width: 5%">Action</th>
+
+                  </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                  <tr *ngFor="let item of prForm.items; let i = index">
+
+                    <td>
+
+                      <select
+                        class="form-select form-select-sm"
+                        [class.is-invalid]="itemErrors[i]?.product"
+                        [(ngModel)]="item.product">
+
+                        <option value="">Select Product</option>
+                        <option>Laptop</option>
+                        <option>Desktop Computer</option>
+                        <option>Monitor</option>
+                        <option>Keyboard</option>
+                        <option>Office Chair</option>
+                        <option>Printer</option>
+
+                      </select>
+                      <div
+  *ngIf="itemErrors[i]?.product"
+  class="text-danger small">
+
+  {{ itemErrors[i].product }}
+
+</div>
+                    </td>
+
+
+                    <td>
+
+                      <input
+                        type="text"
+                        class="form-control form-control-sm"
+                        [(ngModel)]="item.description"
+                        placeholder="Description">
+
+                    </td>
+
+
+                    <td>
+
+                      <input
+                        type="number"
+                        min="1"
+                        class="form-control form-control-sm text-end"
+                        [class.is-invalid]="itemErrors[i]?.quantity"
+                        [(ngModel)]="item.quantity"
+                        (ngModelChange)="calculateTotal()">
+                      <div
+  *ngIf="itemErrors[i]?.quantity"
+  class="text-danger small">
+
+  {{ itemErrors[i].quantity }}
+
+</div>
+                    </td>
+
+
+                    <td>
+
+                      <select
+                        class="form-select form-select-sm"
+                        [(ngModel)]="item.uom">
+
+                        <option>Nos</option>
+                        <option>Kg</option>
+                        <option>Box</option>
+                        <option>Pack</option>
+                        <option>Liter</option>
+
+                      </select>
+
+                    </td>
+
+
+                    <td>
+
+                      <input
+                        type="number"
+                        min="0"
+                        class="form-control form-control-sm text-end"
+                        [class.is-invalid]="itemErrors[i]?.estimatedPrice"
+                        [(ngModel)]="item.estimatedPrice"
+                        (ngModelChange)="calculateTotal()">
+                      <div
+  *ngIf="itemErrors[i]?.estimatedPrice"
+  class="text-danger small">
+
+  {{ itemErrors[i].estimatedPrice }}
+
+</div>
+                    </td>
+
+
+                    <td class="text-end fw-semibold">
+
+                      ₹{{ getItemAmount(item) | number:'1.2-2' }}
+
+                    </td>
+
+
+                    <td class="text-center">
+
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-danger"
+                        (click)="removeItem(i)">
+
+                        <i class="bi bi-trash"></i>
+
+                      </button>
+
+                    </td>
+
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+
+          <!-- Total -->
+
+          <div class="card-footer bg-white">
+
+            <div class="row justify-content-end">
+
+              <div class="col-md-4">
+
+                <div class="d-flex justify-content-between">
+
+                  <span class="fw-semibold">
+                    Estimated Total:
+                  </span>
+
+                  <span class="fw-bold text-primary fs-6">
+
+                    ₹{{ calculateTotal() | number:'1.2-2' }}
+
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- ================= JUSTIFICATION ================= -->
+
+        <div class="card border">
+
+          <div class="card-header bg-light">
+            <strong>Additional Information</strong>
+          </div>
+
+          <div class="card-body">
+
+            <div class="mb-3">
+
+              <label class="form-label">
+                Justification / Business Reason
+              </label>
+
+              <textarea
+                class="form-control form-control-sm"
+                 [class.is-invalid]="validationErrors.justification"
+                rows="3"
+                placeholder="Enter reason for this purchase..."
+                [(ngModel)]="prForm.justification">
+              </textarea>
+              <div
+  *ngIf="validationErrors.justification"
+  class="text-danger small validation-error">
+
+  {{ validationErrors.justification }}
+
+</div>
+            </div>
+
+
+            <div>
+
+              <label class="form-label">
+                Attachment
+              </label>
+
+              <input
+                type="file"
+                class="form-control form-control-sm">
+
+              <small class="text-muted">
+                You can attach quotation, requirement document, etc.
+              </small>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================= FOOTER ================= -->
+
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm"
+          (click)="closeForm()">
+
+          Cancel
+
+        </button>
+
+
+        <button
+          type="button"
+          class="btn btn-outline-primary btn-sm"
+          (click)="saveDraft()">
+
+          <i class="bi bi-save me-1"></i>
+          Save Draft
+
+        </button>
+
+
+        <button
+          type="button"
+          class="btn btn-success btn-sm"
+          (click)="submitForApproval()">
+
+          <i class="bi bi-send me-1"></i>
+          Submit for Approval
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- Modal backdrop -->
+
+<div
+  *ngIf="showForm"
+  class="modal-backdrop fade show">
+</div>
+<div
+  *ngIf="validationErrors.items"
+  class="alert alert-danger py-2 mt-2 validation-error">
+
+  <i class="bi bi-exclamation-circle me-1"></i>
+
+  {{ validationErrors.items }}
+
+</div>

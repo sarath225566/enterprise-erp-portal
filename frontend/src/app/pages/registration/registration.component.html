@@ -1,0 +1,201 @@
+<div class="auth-viewport">
+  <!-- Dynamic Ambient Glows (Zero DOM footprint, no scroll) -->
+  <div class="glow-orb orb-primary"></div>
+  <div class="glow-orb orb-secondary"></div>
+  <div class="glow-orb orb-accent"></div>
+
+  <div class="container h-100 d-flex align-items-center justify-content-center p-2 p-md-3">
+    <div class="auth-card glass-panel w-100">
+      <div class="row g-0 h-100">
+
+        <!-- Left Showcase: Visual & High Impact (Hidden on mobile phones, balanced on laptops) -->
+        <div class="col-lg-5 d-none d-lg-flex flex-column justify-content-between p-4 visual-pane position-relative overflow-hidden">
+          <div class="pane-overlay"></div>
+
+          <!-- Top Badge -->
+          <div class="position-relative z-1">
+            <span class="badge rounded-pill bg-white text-dark px-3 py-2 fw-semibold shadow-sm">
+              <i class="bi bi-shield-lock-fill text-primary me-1"></i> Enterprise Portal
+            </span>
+          </div>
+
+          <!-- Center Content / Metrics Graphic -->
+          <div class="position-relative z-1 my-auto text-white">
+            <h2 class="fw-bold tracking-tight mb-2">Build Faster.<br><span class="text-gradient">Scale Seamlessly.</span></h2>
+            <p class="text-white-50 small mb-4">Empower your workflow with unified real-time data & inventory control.</p>
+
+            <!-- Compact Glass Highlight Card -->
+            <div class="feature-glass-box p-3 rounded-3 mb-2">
+              <div class="d-flex align-items-center gap-3">
+                <div class="feature-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-lightning-charge-fill text-warning"></i>
+                </div>
+                <div>
+                  <div class="fw-bold small text-white">High Efficiency UI</div>
+                  <div class="text-white-50 extra-small">Instant sync & reactive dashboard state</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Micro-Footer -->
+          <div class="position-relative z-1 text-white-50 extra-small">
+            &copy; All rights reserved. Secure 256-Bit SSL Encryption.
+          </div>
+        </div>
+
+        <!-- Right Side: Compact Precision Form -->
+        <div class="col-12 col-lg-7 d-flex flex-column justify-content-center p-3 p-md-4 bg-white form-pane">
+
+          <!-- Header -->
+          <div class="form-header mb-3">
+            <h4 class="fw-bold text-dark mb-0">Create Your Account</h4>
+            <p class="text-secondary extra-small mb-0">Get started in less than 2 minutes</p>
+          </div>
+
+          <form [formGroup]="registerForm" (ngSubmit)="onRegister()" autocomplete="off">
+            <div class="row g-2">
+
+              <!-- Full Name -->
+              <div class="col-12 col-sm-6">
+                <label class="form-label compact-label">Full Name</label>
+                <div class="input-container">
+                  <input
+                    type="text"
+                    class="form-control form-control-compact"
+                    formControlName="fullName"
+                    placeholder="John Doe"
+                  />
+                </div>
+                <div *ngIf="isSubmitted && f['fullName']?.errors" class="invalid-feedback compact-err">
+                  Full name is required
+                </div>
+              </div>
+
+              <!-- Username -->
+              <div class="col-12 col-sm-6">
+                <label class="form-label compact-label">Username</label>
+                <div class="input-container">
+                  <input
+                    type="text"
+                    class="form-control form-control-compact"
+                    formControlName="userName"
+                    placeholder="johndoe"
+                  />
+                </div>
+                <div *ngIf="isSubmitted && f['userName']?.errors" class="invalid-feedback compact-err">
+                  Username is required
+                </div>
+              </div>
+
+              <!-- Email Address -->
+              <div class="col-12 col-sm-6">
+                <label class="form-label compact-label">Email Address</label>
+                <div class="input-container">
+                  <input
+                    type="email"
+                    class="form-control form-control-compact"
+                    formControlName="email"
+                    placeholder="name@example.com"
+                  />
+                </div>
+                <div *ngIf="isSubmitted && f['email']?.errors" class="invalid-feedback compact-err">
+                  Valid email is required
+                </div>
+              </div>
+
+              <!-- Phone Number -->
+              <div class="col-12 col-sm-6">
+                <label class="form-label compact-label">Phone Number</label>
+                <div class="input-container">
+                  <input
+                    type="tel"
+                    class="form-control form-control-compact"
+                    formControlName="phoneNumber"
+                    placeholder="+91 98765 43210"
+                  />
+                </div>
+
+              </div>
+
+              <!-- Password -->
+              <div class="col-12">
+                <label class="form-label compact-label">Password</label>
+                <div class="input-container">
+                  <input
+                    type="password"
+                    class="form-control form-control-compact"
+                    formControlName="password"
+                    placeholder="Choose a strong password"
+                  />
+                </div>
+              </div>
+
+              <!-- Gender Selection (Compact Segmented Chips) -->
+              <div class="col-12 mt-2">
+                <label class="form-label compact-label d-block mb-1">Gender</label>
+                <div class="row g-2">
+                  <div class="col-4">
+                    <input
+                      type="radio"
+                      class="btn-check"
+                      name="gender"
+                      id="opt-male"
+                      value="Male"
+                      formControlName="gender"
+                    />
+                    <label class="btn btn-pill-compact w-100" for="opt-male">Male</label>
+                  </div>
+
+                  <div class="col-4">
+                    <input
+                      type="radio"
+                      class="btn-check"
+                      name="gender"
+                      id="opt-female"
+                      value="Female"
+                      formControlName="gender"
+                    />
+                    <label class="btn btn-pill-compact w-100" for="opt-female">Female</label>
+                  </div>
+
+                  <div class="col-4">
+                    <input
+                      type="radio"
+                      class="btn-check"
+                      name="gender"
+                      id="opt-other"
+                      value="prefer Not Say"
+                      formControlName="gender"
+                    />
+                    <label class="btn btn-pill-compact w-100" for="opt-other">Other</label>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Submit Action -->
+            <div class="mt-3">
+              <button type="submit" class="btn btn-gradient-action w-100 fw-semibold text-white">
+                Create Account
+              </button>
+            </div>
+          </form>
+
+          <!-- Minimal Footer -->
+          <div class="text-center mt-3 pt-2 border-top">
+            <p class="extra-small text-muted mb-0">
+              Already have an account?
+              <a (click)="goToLogin()" role="button" class="text-primary fw-semibold text-decoration-none ms-1 cursor-pointer">
+                Return to sign in
+              </a>
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+.form-label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.form-control,
+.form-select {
+  font-size: 12px;
+}
+
+.card-header {
+  font-size: 13px;
+}
+
+.table {
+  font-size: 12px;
+}
+
+.table th {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.table td {
+  font-size: 12px;
+}
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.btn {
+  font-size: 12px;
+}
+
+.badge {
+  font-size: 10px;
+}
+
+.modal-body {
+  background-color: #f8f9fa;
+}

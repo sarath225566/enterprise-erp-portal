@@ -1,0 +1,99 @@
+<div class="card border-0 shadow-sm rounded-3 p-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h5 class="fw-bold text-dark m-0"><i class="bi bi-box-seam me-2 text-primary"></i> Inventory & Products</h5>
+      <p class="text-muted small m-0">Manage store items, pricing, and active stock inventory.</p>
+    </div>
+    <button class="btn btn-primary btn-sm px-3" (click)="openCreateModal()">
+      <i class="bi bi-plus-lg me-1"></i> Add Product
+    </button>
+  </div>
+
+  <!-- <div *ngIf="successMessage" class="alert alert-success py-2 small">{{ successMessage }}</div> -->
+
+  <!-- Inner Scrollable Table Container -->
+  <div class="table-responsive table-scroll-container">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light sticky-top">
+        <tr>
+          <th>#ID</th>
+          <th>Product Name</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Status</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let prod of productsList">
+          <td class="fw-bold">#{{ prod.id }}</td>
+          <td class="fw-semibold">{{ prod.name }}</td>
+          <td><span class="badge bg-light text-dark border">{{ prod.category }}</span></td>
+          <td class="fw-bold text-success">₹{{ prod.price }}</td>
+          <td>{{ prod.stockQuantity }} units</td>
+          <td>
+            <span class="badge" [ngClass]="prod.isActive ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'">
+              {{ prod.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td class="text-end">
+            <button class="btn btn-light btn-sm me-1 text-primary" (click)="openEditModal(prod)"><i class="bi bi-pencil-square"></i></button>
+            <button class="btn btn-light btn-sm text-danger" (click)="onDeleteProduct(prod.id)"><i class="bi bi-trash"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Dialog -->
+<div *ngIf="isModalOpen" class="modal fade show d-block tab-modal-backdrop">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">{{ isEditMode ? 'Edit Product' : 'Add New Product' }}</h5>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+      <form [formGroup]="productForm" (ngSubmit)="onSaveProduct()">
+        <div class="modal-body custom-scroll" style="max-height: 400px; overflow-y: auto;">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Product Name</label>
+            <input type="text" formControlName="name" class="form-control form-control-sm" placeholder="e.g. Wireless Mouse">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Category</label>
+            <select formControlName="category" class="form-select form-select-sm">
+              <option value="Electronics">Electronics</option>
+              <option value="Stationery">Stationery</option>
+              <option value="Software">Software</option>
+              <option value="Hardware">Hardware</option>
+            </select>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label small fw-semibold">Price (₹)</label>
+              <input type="number" formControlName="price" class="form-control form-control-sm">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label small fw-semibold">Stock Quantity</label>
+              <input type="number" formControlName="stockQuantity" class="form-control form-control-sm">
+            </div>
+          </div>
+
+          <div class="form-check form-switch mb-2">
+            <input class="form-check-input" type="checkbox" formControlName="isActive" id="activeCheck">
+            <label class="form-check-label small fw-semibold" for="activeCheck">Is Product Active?</label>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light btn-sm" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm px-3">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

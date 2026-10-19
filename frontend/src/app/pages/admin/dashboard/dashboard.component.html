@@ -1,0 +1,207 @@
+<div class="d-flex">
+  <!-- Left Sidebar -->
+  <div class="d-flex flex-column flex-shrink-0 p-3 bg-dark text-white sidebar-container">
+    <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+      <i class="bi bi-cpu-fill fs-3 me-2 text-primary"></i>
+      <span class="fs-4 fw-bold">Enterprise Portal</span>
+    </a>
+    <hr>
+
+    <div *ngIf="isMenuLoading" class="text-center py-3 text-muted small">
+      <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+      <span class="ms-2">Loading menus...</span>
+    </div>
+
+    <ul *ngIf="!isMenuLoading" class="nav nav-pills flex-column mb-auto">
+      <li *ngFor="let item of menuItems" class="nav-item mb-1">
+
+        <!-- MENU WITH CHILDREN -->
+        <ng-container *ngIf="item.children && item.children.length > 0; else normalMenu">
+          <a
+            class="nav-link text-white cursor-pointer d-flex align-items-center gap-2"
+            [class.active]="item.expanded"
+            (click)="toggleMenu(item)"
+          >
+            <i [class]="item.icon"></i>
+            <span>{{ item.label }}</span>
+            <i
+              class="bi ms-auto"
+              [ngClass]="item.expanded ? 'bi-chevron-up' : 'bi-chevron-down'"
+            ></i>
+          </a>
+
+          <!-- SUBMENU ITEMS -->
+          <ul *ngIf="item.expanded" class="nav flex-column ms-3 mt-1 submenu">
+            <li *ngFor="let child of item.children" class="nav-item">
+              <a
+                (click)="selectMenu(child.id)"
+                [class.active]="activeTab === child.id"
+                class="nav-link text-white cursor-pointer d-flex align-items-center gap-2 submenu-item"
+              >
+                <i [class]="child.icon"></i>
+                <span>{{ child.label }}</span>
+              </a>
+            </li>
+          </ul>
+        </ng-container>
+
+        <!-- NORMAL MENU WITHOUT CHILDREN -->
+        <ng-template #normalMenu>
+          <a
+            (click)="selectMenu(item.id)"
+            [class.active]="activeTab === item.id"
+            class="nav-link text-white cursor-pointer d-flex align-items-center gap-2"
+          >
+            <i [class]="item.icon"></i>
+            <span>{{ item.label }}</span>
+          </a>
+        </ng-template>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Main Content Wrapper -->
+  <div class="w-100 d-flex flex-column min-vh-100 bg-light">
+
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom px-4 py-2 shadow-sm sticky-top">
+      <div class="container-fluid p-0 d-flex justify-content-between align-items-center">
+
+        <div class="d-none d-md-flex align-items-center search-box">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text bg-light border-0 ps-3 text-muted">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control bg-light border-0 py-2 shadow-none" placeholder="Search anything...">
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 ms-auto">
+          <!-- Language Selector -->
+          <div class="dropdown">
+            <button class="btn btn-light btn-sm rounded-pill px-3 py-1 border-0 dropdown-toggle d-flex align-items-center gap-1 text-secondary" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-globe text-primary"></i>
+              <span class="fw-medium text-dark">{{ currentLang }}</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3 py-2">
+              <li><a class="dropdown-item cursor-pointer py-2 px-3 small" (click)="changeLang('English')">English</a></li>
+              <li><a class="dropdown-item cursor-pointer py-2 px-3 small" (click)="changeLang('Malayalam')">Malayalam</a></li>
+            </ul>
+          </div>
+
+          <!-- AI Chatbot Button -->
+          <button class="btn btn-light rounded-circle icon-btn position-relative" (click)="toggleChat()" title="AI Assistant">
+            <i class="bi bi-robot text-primary fs-6"></i>
+          </button>
+
+          <!-- Notification Bell -->
+          <div class="dropdown">
+            <button class="btn btn-light rounded-circle icon-btn position-relative" data-bs-toggle="dropdown" title="Notifications">
+              <i class="bi bi-bell text-secondary fs-6"></i>
+              <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                <span class="visually-hidden">New alerts</span>
+              </span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-3 rounded-3 notification-box">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0 text-dark">Notifications</h6>
+                <span class="badge bg-primary-subtle text-primary rounded-pill">2 New</span>
+              </div>
+              <hr class="my-2 opacity-10">
+              <div class="d-flex align-items-start gap-2 py-2 border-bottom">
+                <i class="bi bi-person-check text-success fs-5"></i>
+                <div>
+                  <p class="small mb-0 fw-semibold text-dark">New user registered</p>
+                  <span class="text-muted extra-small">2 mins ago</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="vr mx-2 opacity-25"></div>
+
+          <!-- User Profile -->
+          <div class="dropdown">
+            <a class="d-flex align-items-center gap-2 text-decoration-none cursor-pointer dropdown-toggle hide-caret" data-bs-toggle="dropdown">
+              <div class="position-relative">
+                <div class="avatar-circle bg-primary text-white fw-bold">S</div>
+                <span class="position-absolute bottom-0 end-0 p-1 bg-success border border-white rounded-circle"></span>
+              </div>
+              <div class="d-none d-lg-block text-start">
+                <span class="d-block fw-semibold text-dark small leading-none">Sarath</span>
+                <span class="text-muted extra-small">Software Developer</span>
+              </div>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3 py-2 mt-2">
+              <li><a class="dropdown-item cursor-pointer py-2 px-3 small d-flex align-items-center gap-2"><i class="bi bi-person text-muted"></i> Profile</a></li>
+              <li><a class="dropdown-item cursor-pointer py-2 px-3 small d-flex align-items-center gap-2"><i class="bi bi-gear text-muted"></i> Settings</a></li>
+              <li><hr class="dropdown-divider opacity-10"></li>
+              <li>
+                <a class="dropdown-item cursor-pointer py-2 px-3 small text-danger d-flex align-items-center gap-2" (click)="onLogout()">
+                  <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </nav>
+
+    <!-- Dynamic Content Body using router-outlet -->
+    <div class="p-4 flex-grow-1">
+      <router-outlet></router-outlet>
+    </div>
+
+  </div>
+
+  <!-- Floating Chatbot Widget -->
+  <div *ngIf="isChatOpen" class="card position-fixed bottom-0 end-0 m-3 shadow-lg chatbot-widget border-0">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2 px-3">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-robot fs-5"></i>
+        <span class="fw-bold">AI Assistant</span>
+      </div>
+      <button class="btn-close btn-close-white" (click)="toggleChat()"></button>
+    </div>
+
+    <div #chatScrollContainer class="card-body chatbot-messages p-3">
+      <div *ngFor="let msg of messages" class="d-flex mb-3" [ngClass]="msg.isUser ? 'justify-content-end' : 'justify-content-start'">
+        <div
+          class="chat-bubble p-2 px-3 rounded-3 shadow-sm"
+          [ngClass]="msg.isUser ? 'bg-primary text-white chat-bubble-user' : 'bg-light text-dark border chat-bubble-ai'">
+          <div class="chat-text" style="white-space: pre-wrap;">{{ msg.text }}</div>
+          <div class="chat-time text-end" [ngClass]="msg.isUser ? 'text-white-50' : 'text-muted'">
+            {{ msg.time }}
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="isLoading" class="d-flex justify-content-start mb-2">
+        <div class="bg-light border text-muted px-3 py-2 rounded-3 small d-flex align-items-center gap-2">
+          <div class="spinner-grow spinner-grow-sm text-primary" role="status"></div>
+          <span>AI is typing...</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-footer bg-white border-top p-2">
+      <div class="input-group">
+        <input
+          type="text"
+          class="form-control form-control-sm border-0 bg-light py-2 shadow-none"
+          placeholder="Type a message..."
+          [(ngModel)]="userMessage"
+          (keydown.enter)="sendMessage()"
+          [disabled]="isLoading">
+        <button
+          class="btn btn-primary btn-sm px-3"
+          type="button"
+          (click)="sendMessage()"
+          [disabled]="isLoading || !userMessage.trim()">
+          <i class="bi bi-send-fill"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
